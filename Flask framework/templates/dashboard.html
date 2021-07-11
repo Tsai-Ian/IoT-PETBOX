@@ -1,0 +1,401 @@
+{% extends 'layout.html' %}
+
+{% block title %}Devices{% endblock %}
+
+{% block content %}
+<h2 style="margin-top: 100px;">{{ devices.petbox }}</h2>
+<div class="board row gx-4 gx-lg-5 bg-primary over-flow" id="board">
+
+    <!--<p>Your device details are below:</p>-->
+    {% if devices %}
+
+    <button class="controlls__tab btn btn-primary col-lg-2 col-md-6 col-sm-6 over-flow shadow-sm text-center chbig"
+        onclick="bulbSwitch();">
+        <i class="far fa-lightbulb controlls__icon"></i>
+        <h3 class="controlls__header h4 mb-2">Bulb</h3>
+        <div class="controlls__text">
+            <p class="controlls__status" id="bulb_status"></p>
+        </div>
+    </button>
+    <button class="controlls__tab btn btn-primary col-lg-2 col-md-6 col-sm-6 over-flow shadow-sm text-center  chbig"
+        onclick="feedSwitch();">
+        <i class="far fa-lightbulb controlls__icon"></i>
+        <h3 class="controlls__header  h4 mb-2">Feed</h3>
+        <div class="controlls__text">
+            <p class="controlls__status" id="feed_status"></p>
+        </div>
+    </button>
+    <button class="controlls__tab btn btn-primary col-lg-2 col-md-6 col-sm-6 over-flow shadow-sm text-center  chbig">
+        <i class="fas fa-thermometer-half controlls__icon"></i>
+        <h3 class="controlls__header  h4 mb-2">TEMPERATURE</h3>
+        <div class="controlls__text">
+            <p class="controlls__status" id="temperature_status"></p>
+        </div>
+    </button>
+    <button class="controlls__tab btn btn-primary col-lg-2 col-md-6 col-sm-6 over-flow shadow-sm text-center  chbig">
+        <i class="fas fa-thermometer-half controlls__icon"></i>
+        <h3 class="controlls__header  h4 mb-2">HUMIDITY</h3>
+        <div class="controlls__text">
+            <p class="controlls__status" id="humidity_status"></p>
+        </div>
+    </button>
+    <button class="controlls__tab btn btn-primary col-lg-2 col-md-6 col-sm-6 over-flow shadow-sm text-center  chbig">
+        <i class="fas fa-thermometer-half controlls__icon"></i>
+        <h3 class="controlls__header  h4 mb-2">Water Level</h3>
+        <div class="controlls__text">
+            <p class="controlls__status" id="waterlevel_status"></p>
+        </div>
+    </button>
+    <button class="controlls__tab btn btn-primary col-lg-2 col-md-6 col-sm-6 over-flow shadow-sm text-center  chbig"
+        onclick="resetFeedLevel();">
+        <i class="fas fa-thermometer-half controlls__icon"></i>
+        <h3 class="controlls__header  h4 mb-2">Feed Level</h3>
+        <div class="controlls__text">
+            <p class="controlls__status" id="feedlevel_status"></p>
+        </div>
+    </button>
+</div>
+<h2>Time Setting</h2>
+<div class="container bg-dark" id="timesboard">
+    <div class="row gx-4 gx-lg-5 text-center justify-content-around">
+        <h3 class="text-light">Feed time setup</h3>
+        <div class="row col-lg-4 col-md-12 col-sm-12 m-auto justify-content-around">
+            <p class="text-light">Feed Time 1</p>
+            <input id="ft_01" class="btn btn-primary col-lg-11 shadow-sm text-center chbig" type="time" value="13:30" />
+        </div>
+        <div class="row col-lg-4 col-md-12 col-sm-12 m-auto justify-content-around">
+            <p class="text-light">Feed Time 2</p>
+            <input id="ft_02" class="btn btn-primary col-lg-11 shadow-sm text-center chbig" type="time" value="13:30" />
+        </div>
+        <div class="row col-lg-4 col-md-12 col-sm-12 m-auto justify-content-around">
+            <p class="text-light">Feed Time 3</p>
+            <input id="ft_03" class="btn btn-primary col-lg-11 shadow-sm text-center chbig" type="time" value="13:30" />
+        </div>
+    </div>
+    <div class="row gx-4 gx-lg-5 text-center justify-content-around">
+        <h3 class="text-light" style="margin-top: 50px;">bulb time setup</h3>
+        <div class="row col-lg-4 col-md-12 col-sm-12 m-auto justify-content-around">
+            <p class="text-light">Bulb Start</p>
+            <input id="bt_01" class="btn btn-primary col-lg-11 shadow-sm text-center chbig" type="time" value="13:30" />
+        </div>
+        <div class="row col-lg-4 col-md-12 col-sm-12 m-auto justify-content-around">
+            <p class="text-light">Bulb Stop</p>
+            <input id="bt_02" class="btn btn-primary col-lg-11 shadow-sm text-center chbig" type="time" value="13:30" />
+        </div>
+        <div class="row col-lg-4 col-md-12 col-sm-12 m-auto justify-content-around">
+            <p class="text-light">SET Time</p>
+            <input id="bt_03" class="btn btn-primary col-lg-11 shadow-sm text-center chbig" type="button" value="set"
+                onclick="setTimes();" />
+        </div>
+    </div>
+</div>
+<h2>chart data</h2>
+<section class="container chart__section">
+
+    <div class="row gx-4 gx-lg-5 justify-content-around">
+        <div class="controlls__chart row col-lg-6 col-md-12 text-center bg-light shadow-sm justify-content-around">
+            <figure class="col-lg-12 highcharts-figure">
+                <div id="temperature"></div>
+            </figure>
+        </div>
+        <div class="controlls__chart row col-lg-6 col-md-12 text-center bg-light shadow-sm justify-content-around">
+            <figure class="col-lg-12 highcharts-figure">
+                <div id="humidity"></div>
+            </figure>
+        </div>
+        <div class="controlls__chart row col-lg-6 col-md-12 text-center bg-light shadow-sm justify-content-around">
+            <figure class=" col-lg-12 highcharts-figure">
+                <div id="waterlevel"></div>
+            </figure>
+        </div>
+        <div class="controlls__chart row col-lg-6 col-md-12 text-center bg-light shadow-sm justify-content-around">
+            <figure class="col-lg-12 highcharts-figure">
+                <div id="feedlevel"></div>
+            </figure>
+        </div>
+    </div>
+    <div class="divbg" id="holder-div" style="float: centrt; margin-right: 5px; width: 400px; height: 250px;">
+        <img class="videostyle" loading="lazy" src="{{ url_for('video2_feed') }}">
+    </div>
+
+</section>
+{% elif devices is none %}
+<button class="controlls__tab" id="newDevice" onclick="addDevice();">
+    <i class="fas fa-plus"></i>
+</button>
+{% endif %}
+
+
+
+
+{% endblock %}
+
+{% block script %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+
+    var socket = io();
+
+    window.onload = function () {
+        checkStatus();
+        socket.emit('getChartData', { topic: '{{ devices.petbox }}' });
+    }
+
+    socket.on('connect', function () {
+        console.log('Websocket connected!');
+        socket.emit('subscribe', { topic: '{{ devices.petbox }}/status' });
+    });
+
+
+    /*-----------------  initial -------------------- */
+    function checkStatus() {
+        var status = document.querySelectorAll(".controlls__status");
+        for (var i = 0; i < status.length; i++) {
+            if (status[i].innerHTML == "") {
+                status[i].innerHTML = "DISCONNECT";
+            }
+        }
+
+        var petbox = '{{ devices.petbox }}';
+        if (petbox != '') {
+            controlPannel();
+            chartPannel();
+        }
+
+    }
+
+    /*-----------------  BTN FUNCTION -------------------- */
+    function bulbSwitch(clickelement) {
+        var bulbStatus = document.getElementById('bulb_status').innerHTML;
+        var msg = {
+            "switch": "bulb",
+            "status": ""
+        };
+
+        if (bulbStatus == 'on') {
+            msg.status = "off";
+            socket.emit('publish', { topic: '{{ devices.petbox }}/switch', payload: msg });
+        }
+        else if (bulbStatus == 'off') {
+            msg.status = "on";
+            socket.emit('publish', { topic: '{{ devices.petbox }}/switch', payload: msg });
+
+        }
+    }
+
+    function feedSwitch() {
+        var msg = {
+            "switch": "feed",
+            "status": "on"
+        };
+
+        socket.emit('publish', { topic: '{{ devices.petbox }}/switch', payload: msg });
+
+
+    }
+
+    function resetFeedLevel() {
+        var msg = {
+            "switch": "resetFeedLevel",
+            "status": ""
+        };
+        socket.emit('publish', { topic: '{{ devices.petbox }}/switch', payload: msg });
+    }
+
+    function setTimes() {
+        var feedTime1 = document.getElementById("ft_01").value;
+        var feedTime2 = document.getElementById("ft_02").value;
+        var feedTime3 = document.getElementById("ft_03").value;
+        var bulbStart = document.getElementById("bt_01").value;
+        var bulbStop = document.getElementById("bt_02").value;
+
+        var msg = {
+            "switch": "",
+            "status": ""
+        };
+
+        msg.switch = "setFeedTime1";
+        msg.status = feedTime1;
+        socket.emit('publish', { topic: '{{ devices.petbox }}/switch', payload: msg });
+
+        msg.switch = "setFeedTime2";
+        msg.status = feedTime2;
+        socket.emit('publish', { topic: '{{ devices.petbox }}/switch', payload: msg });
+
+        msg.switch = "setFeedTime3";
+        msg.status = feedTime3;
+        socket.emit('publish', { topic: '{{ devices.petbox }}/switch', payload: msg });
+
+        msg.switch = "setBulbStart";
+        msg.status = bulbStart;
+        socket.emit('publish', { topic: '{{ devices.petbox }}/switch', payload: msg });
+
+        msg.switch = "setBulbStop";
+        msg.status = bulbStop;
+        socket.emit('publish', { topic: '{{ devices.petbox }}/switch', payload: msg });
+
+    }
+
+    function addDevice() {
+        // create a new div element
+        // and give it some content
+
+        var plus = document.getElementById('newDevice');
+        var parentelement = plus.parentNode;
+        plus.style.display = "none";
+
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "{{ url_for('addDevice') }}");
+        form.setAttribute("id", "newDeviceForm");
+
+        var newDevice = document.createElement("input");
+        newDevice.setAttribute("type", "text");
+        newDevice.setAttribute("name", "deviceId");
+        newDevice.setAttribute("placeholder", "Device ID");
+        newDevice.setAttribute("required", "");
+        newDevice.setAttribute("id", "deviceIdInput");
+
+
+        var btn = document.createElement("input");
+        btn.setAttribute("type", "submit");
+        btn.setAttribute("value", "Submit");
+
+        var cancelbtn = document.createElement("input");
+        cancelbtn.setAttribute("type", "button");
+        cancelbtn.setAttribute("value", "Cancel");
+        cancelbtn.setAttribute("onclick", "cancelbtn();")
+
+
+        form.appendChild(newDevice);
+        form.appendChild(btn);
+        form.appendChild(cancelbtn);
+
+        parentelement.insertBefore(form, plus);
+    }
+
+    function cancelbtn() {
+        document.getElementById('newDevice').style.display = '';
+        document.getElementById('newDeviceForm').remove();
+    }
+
+    /*---------------------- CONTROL PANNEL START ---------------------- */
+    function controlPannel() {
+        socket.on('mqtt', function (msg) {
+            console.log(msg);
+            if (msg.topic == '{{ devices.petbox }}/status') {
+                topic = msg.topic;
+                // console.log(topic);  
+                data = JSON.parse(msg.payload);
+                // console.log(data);
+                document.getElementById('bulb_status').innerHTML = data['bulb'];
+                document.getElementById('feed_status').innerHTML = '<span>Last feed time : </span>' + data['feed'];
+                document.getElementById('temperature_status').innerHTML = data['temperature'] + '<span>°C</span>';
+                document.getElementById('humidity_status').innerHTML = data['humidity'] + '<span>%</span>';
+                document.getElementById('waterlevel_status').innerHTML = data['waterlevel'] + '<span>%</span>';
+                document.getElementById('feedlevel_status').innerHTML = data['feedlevel'] + '<span>%</span>';
+
+            }
+        });
+    }
+
+
+
+    /*---------------------- CONTROL PANNEL END ---------------------- */
+
+
+
+
+
+
+    /*---------------------- CHART REGION START ---------------------- */
+    function chartPannel() {
+
+        setInterval(function () {
+            socket.emit('getChartData', { topic: '{{ devices.petbox }}' });
+        }, 30000);
+
+
+        socket.on('chartData_{{ devices.petbox }}', function (msg) {
+            topic = msg.topic;
+            // console.log(topic);
+            data = JSON.parse(msg.payload);
+            // console.log(data);
+            // console.log(typeof(data));
+            var xAxis = [];
+            var tAxis = [];
+            var hAxis = [];
+            var wAxis = [];
+            var fAxis = [];
+
+            data.map(i => {
+                // console.log(i);
+                xAxis.push(i.date_time);
+                tAxis.push(i.temperature);
+                hAxis.push(i.humidity);
+                wAxis.push(i.waterlevel);
+                fAxis.push(i.feedlevel);
+            });
+            createChart(xAxis, tAxis, 'temperature', 'Temperature (°C)');
+            createChart(xAxis, hAxis, 'humidity', 'Humidity (%)');
+            createChart(xAxis, wAxis, 'waterlevel', 'Water Level (%)');
+            createChart(xAxis, fAxis, 'feedlevel', 'Feed Level (%)');
+
+        });
+    }
+
+
+    function createChart(xAxis, yAxis, chartId, ylabel) {
+        console.log(xAxis);
+        console.log(yAxis);
+
+        Highcharts.chart(chartId, {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: chartId
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: xAxis,
+                reversed: true,
+                //滾軸的範圍              
+                labels: {
+                    format: '{value:%H:%M}',
+                    style: {
+                        color: '#f4623a',
+                        fontSize: '10px',
+                    },
+                },
+            },
+            yAxis: {
+                title: {
+                    text: ylabel
+                }
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    },
+                    enableMouseTracking: true
+                }
+            },
+            series: [{
+                name: '{{ devices.petbox }}',
+                data: yAxis
+            },]
+        });
+    }
+/*---------------------- CHART REGION END ---------------------- */
+</script>
+{% endblock %}

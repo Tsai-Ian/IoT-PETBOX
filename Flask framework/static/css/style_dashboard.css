@@ -1,0 +1,22 @@
+section {
+    width: 100%;    
+    margin-bottom: 10px;
+}
+
+.control__section, .chart__section
+{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    /* border: #f4623a solid 1px; */
+    /* border-radius: 5px; */
+    padding: 5px;
+}
+.controlls__tab {
+    padding: 5px;
+    width: 150px;
+}
+.chart__section
+{
+    height: 1024px;
+}

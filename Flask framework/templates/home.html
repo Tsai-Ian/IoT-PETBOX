@@ -1,0 +1,131 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+{% block content %}
+<h2>Home Page</h2>
+<p>Welcome back, {{ username }}!</p>
+<div>
+    <div class="container">
+        <div class="row">
+
+        </div>
+    </div>
+    <div class="board">
+        {% if devices %}
+        <section class="home_section bg-light">
+            <!--<div class="avatar_container">
+                <a href="{{ url_for('devices') }}"><img class="pet_avatar"
+                        src="https://i.kym-cdn.com/entries/icons/original/000/028/232/hamster.jpg" alt="hamster"></a>
+            </div>-->
+            <div class="row">
+                <div class="col-lg-3 card col-md-6">
+                    <img src="{{ url_for('static', filename='images/animal/mouse.jpg') }}"
+                        class="card-img-top over-flow" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">天竺鼠</h5>
+                        <a href="{{ url_for('devices') }}" class="btn btn-primary stretched-link">查看狀態</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 card col-md-6">
+                    <img src="{{ url_for('static', filename='images/animal/bird.jpg') }}" class="card-img-top over-flow"
+                        alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">活潑鳥</h5>
+                        <a href="{{ url_for('devices') }}" class="btn btn-primary stretched-link">查看狀態</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 card col-md-6">
+                    <img src="{{ url_for('static', filename='images/animal/cat.jpg') }}" class="card-img-top over-flow"
+                        alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">可愛貓</h5>
+                        <a href="{{ url_for('devices') }}" class="btn btn-primary stretched-link">查看狀態</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 card col-md-6">
+                    <img src="{{ url_for('static', filename='images/animal/pig.jpg') }}" class="card-img-top  over-flow"
+                        alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">沉思豬</h5>
+                        <a href="{{ url_for('devices') }}" class="btn btn-primary stretched-link">查看狀態</a>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        {% elif devices is none %}
+        <div class="row">
+            <button class="controlls__tab addDevice col-lg-4 col-md-6 col-sm-12" id="newDevice" onclick="addDevice();">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+
+<script type="text/javascript" charset="utf-8">
+    var socket = io();
+
+    window.onload = function () {
+        checkStatus();
+        socket.emit('getChartData', { topic: '{{ devices.petbox }}' });
+
+    }
+
+    socket.on('connect', function () {
+        console.log('Websocket connected!');
+        socket.emit('subscribe', { topic: '{{ devices.petbox }}/status' });
+    });
+
+
+    function addDevice() {
+        // create a new div element
+        // and give it some content
+
+        var plus = document.getElementById('newDevice');
+        var parentelement = plus.parentNode;
+        plus.style.display = "none";
+
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "{{ url_for('addDevice') }}");
+        form.setAttribute("id", "newDeviceForm");
+
+        var newDevice = document.createElement("input");
+        newDevice.setAttribute("type", "text");
+        newDevice.setAttribute("name", "deviceId");
+        newDevice.setAttribute("placeholder", "Device ID");
+        newDevice.setAttribute("required", "");
+        newDevice.setAttribute("id", "deviceIdInput");
+
+
+        var btn = document.createElement("input");
+        btn.setAttribute("type", "submit");
+        btn.setAttribute("value", "Submit");
+
+        var cancelbtn = document.createElement("input");
+        cancelbtn.setAttribute("type", "button");
+        cancelbtn.setAttribute("value", "Cancel");
+        cancelbtn.setAttribute("onclick", "cancelbtn();")
+
+
+        form.appendChild(newDevice);
+        form.appendChild(btn);
+        form.appendChild(cancelbtn);
+
+        parentelement.insertBefore(form, plus);
+    }
+
+    function cancelbtn() {
+        document.getElementById('newDevice').style.display = '';
+        document.getElementById('newDeviceForm').remove();
+    }
+</script>
+{% endblock %}
